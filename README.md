@@ -32,7 +32,7 @@ Each document feeds the next. By the time the coding agent starts, there's nothi
 
 | File | Input | Output |
 |------|-------|--------|
-| `00-interview.md` | Your answers | `proposal.md` |
+| `interview.md` | Your answers | `proposal.md` |
 | `00-prop-to-req.md` | `proposal.md` | `requirements.md` |
 | `01-req-to-ac.md` | `requirements.md` | `acceptance_criteria.md` |
 | `02-architect-constraints.md` | `requirements.md` + `acceptance_criteria.md` | `constraints.md` |
@@ -48,7 +48,7 @@ Each document feeds the next. By the time the coding agent starts, there's nothi
 Open your agent in the project folder and run:
 
 ```
-/00-interview.md
+/interview.md
 ```
 
 Answer questions one by one. The agent writes `proposal.md` when done.
