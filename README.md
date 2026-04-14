@@ -2,6 +2,20 @@
 
 A pipeline that turns a raw feature idea into a ready-to-execute implementation plan through a structured AI-assisted interview and document chain.
 
+**The core insight:** the smarter the model working on the pipeline, the dumber the model can be on implementation.
+
+Invest intelligence upfront — in the spec. Then any agent can execute: Claude, GPT, a local Ollama model, whatever you have.
+
+---
+
+## The problem with built-in planning modes
+
+Claude Code, Cursor, Copilot Workspace — they all have planning pipelines. But those pipelines are black boxes. You can't see the prompts, can't adapt them to your stack, can't control what questions get asked before implementation starts.
+
+SDD is the same idea, made explicit and portable. Five markdown files. No lock-in.
+
+---
+
 ## How it works
 
 You answer questions. AI writes the spec. AI writes the plan. You hand the plan to a coding agent.
@@ -10,7 +24,7 @@ You answer questions. AI writes the spec. AI writes the plan. You hand the plan 
 Interview → Proposal → Requirements → Acceptance Criteria → Constraints → Verification → Plan
 ```
 
-Each document feeds the next. The coding agent gets a plan that leaves nothing to interpretation.
+Each document feeds the next. By the time the coding agent starts, there's nothing left to interpret.
 
 ---
 
@@ -31,13 +45,13 @@ Each document feeds the next. The coding agent gets a plan that leaves nothing t
 
 ### 1. Start the interview
 
-Open Claude Code in your project folder. Run:
+Open your agent in the project folder and run:
 
 ```
 /00-interview.md
 ```
 
-Answer questions one by one. The agent will write `proposal.md` when done.
+Answer questions one by one. The agent writes `proposal.md` when done.
 
 ### 2. Run the pipeline
 
@@ -76,9 +90,23 @@ Most AI coding failures happen before the first line of code — the agent didn'
 
 ---
 
+## Model strategy
+
+Use your best model for the pipeline (interview → plan). Use a cheaper or local model for implementation.
+
+The plan produced by the pipeline is specific enough that a weaker model can execute it reliably — because it has no ambiguity to resolve. This makes SDD practical for:
+
+- Cost reduction (GPT-4o for spec, GPT-4o-mini for code)
+- Privacy (local Ollama model handles implementation, nothing leaves your machine)
+- Offline workflows
+
+---
+
 ## Stack compatibility
 
-The pipeline is stack-agnostic. The `02-architect-constraints.md` prompt is where you inject project-specific context: your tech stack, key entities, existing patterns to follow.
+The pipeline is stack-agnostic. The `02-architect-constraints.md` step is where you inject project-specific context: your tech stack, key entities, existing patterns to follow.
+
+Works with any agent that can read files and follow instructions: Claude Code, Cursor, Aider, Continue, or a raw API call.
 
 ---
 
