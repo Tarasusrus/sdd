@@ -24,6 +24,7 @@ Analyze @file:requirements.md and @file:acceptance_criteria.md and define techni
 - API design (new endpoints, changes to existing responses)
 - Code style (naming, patterns to follow, anti-patterns to avoid)
 - Testing strategy (what to test, how)
+- Decisions & Trade-offs — for every non-obvious choice: what was picked, what alternatives were rejected, why. This section is mandatory. A year from now this is the most valuable part of the spec.
 
 Output Format
 

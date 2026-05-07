@@ -1,115 +1,103 @@
 # SDD — Spec-Driven Development
 
-A pipeline that turns a raw feature idea into a ready-to-execute implementation plan through a structured AI-assisted interview and document chain.
+Personal methodology for spec-driven AI development plus a public archive of sanitized examples.
 
-**The core insight:** the smarter the model working on the pipeline, the dumber the model can be on implementation.
+The core idea: a spec is intent that survives the conversation. The chat closes, the channel scrolls, the author forgets. The spec stays. Code answers *how*, git answers *when*, the spec answers *why* — and *why* decays the fastest.
 
-Invest intelligence upfront — in the spec. Then any agent can execute: Claude, GPT, a local Ollama model, whatever you have.
+This repo holds:
 
----
-
-## The problem with built-in planning modes
-
-Claude Code, Cursor, Copilot Workspace — they all have planning pipelines. But those pipelines are black boxes. You can't see the prompts, can't adapt them to your stack, can't control what questions get asked before implementation starts.
-
-SDD is the same idea, made explicit and portable. Five markdown files. No lock-in.
+- **`method/`** — the prompt pipeline that turns a raw idea into an executable plan
+- **`templates/`** — spec shapes for the four cases that actually show up
+- **`examples/`** — sanitized, real artifacts (private archive lives in `sdd-archive`)
+- **`INDEX.md`** — index of archived specs
 
 ---
 
-## How it works
+## When to use it
 
-You answer questions. AI writes the spec. AI writes the plan. You hand the plan to a coding agent.
+Not on every task. SDD is overhead, and overhead on a typo fix is how teams come to hate the method.
+
+Rule of thumb: **if you'd be annoyed at the AI for misunderstanding, write a spec. Otherwise don't.**
+
+Concrete threshold:
+- More than one module touched
+- More than 30 minutes of implementation
+- Decision a future reader will ask "why" about
+
+Below that — prompt the agent and move on.
+
+---
+
+## The pipeline (`method/`)
 
 ```
-Interview → Proposal → Requirements → Acceptance Criteria → Constraints → Verification → Plan
+interview → proposal → requirements → acceptance → constraints → verification → plan → archive
 ```
 
-Each document feeds the next. By the time the coding agent starts, there's nothing left to interpret.
-
----
-
-## Pipeline steps
-
-| File | Input | Output |
+| Step | Input | Output |
 |------|-------|--------|
-| `interview.md` | Your answers | `proposal.md` |
-| `00-prop-to-req.md` | `proposal.md` | `requirements.md` |
-| `01-req-to-ac.md` | `requirements.md` | `acceptance_criteria.md` |
-| `02-architect-constraints.md` | `requirements.md` + `acceptance_criteria.md` | `constraints.md` |
-| `03-verification.md` | All three above | `verification.md` |
-| `04-task-list.md` | All above | `plan.yaml` |
+| `method/interview.md` | your answers | `proposal.md` |
+| `method/00-prop-to-req.md` | `proposal.md` | `requirements.md` |
+| `method/01-req-to-ac.md` | `requirements.md` | `acceptance_criteria.md` |
+| `method/02-architect-constraints.md` | `requirements.md` + `acceptance_criteria.md` | `constraints.md` |
+| `method/03-verification.md` | all of the above | `verification.md` |
+| `method/04-task-list.md` | all of the above | `plan.yaml` |
+| `method/05-archive.md` | shipped feature | `archive/<project>/<date>-<slug>/` + `retro.md` + INDEX row |
+
+Run each step as a slash command in your agent. Each step reads what the previous step produced.
+
+If `03-verification.md` reports blockers — fix the upstream doc, re-run.
 
 ---
 
-## Usage
+## Templates (`templates/`)
 
-### 1. Start the interview
+Four shapes cover the common cases:
 
-Open your agent in the project folder and run:
+- **`feature-spec.md`** — new capability, the long-lived doc
+- **`change-delta.md`** — modification of an existing feature, references parent spec
+- **`migration.md`** — moving between two states (storage, contract, infra)
+- **`architecture.md`** — module boundary and contract
 
-```
-/interview.md
-```
-
-Answer questions one by one. The agent writes `proposal.md` when done.
-
-### 2. Run the pipeline
-
-Run each step in order:
-
-```
-/00-prop-to-req.md
-/01-req-to-ac.md
-/02-architect-constraints.md
-/03-verification.md
-/04-task-list.md
-```
-
-Each step reads the outputs of the previous ones.
-
-### 3. Review verification
-
-If `03-verification.md` reports blockers — fix the relevant document manually, then re-run step 3.
-
-### 4. Hand off the plan
-
-Give `plan.yaml` to your coding agent. The plan contains phases, atomic tasks, dependencies, and validation criteria.
+Every template has frontmatter for indexing and a mandatory **Decisions & Trade-offs** section. The decisions section is the part that earns its keep a year later.
 
 ---
 
-## Why this works
+## Archive
 
-Most AI coding failures happen before the first line of code — the agent didn't know what to build. SDD front-loads that clarity:
+This repo's `examples/` and `INDEX.md` only hold sanitized, share-safe specs.
 
-- **Interview** forces you to think through the problem before touching code
-- **Requirements** separate what from how
-- **Acceptance criteria** define done before implementation starts
-- **Constraints** encode architecture decisions the agent must respect
-- **Verification** catches contradictions between documents before they become bugs
-- **Plan** gives the agent atomic tasks it can execute and validate independently
+Real working specs — with business context, internal names, NDA material — live in the **private `sdd-archive` repo**, mirroring the same structure (`<project>/<YYYY-MM-DD>-<slug>/`).
+
+Each archived feature must include `retro.md`: what worked, what didn't, what to add to the templates. This is the feedback loop that keeps the method itself from rotting.
 
 ---
 
 ## Model strategy
 
-Use your best model for the pipeline (interview → plan). Use a cheaper or local model for implementation.
+Use the strongest available model for `method/` (intent, plan). Use a cheaper or local model for implementation — the plan removes ambiguity, so a weaker executor is fine.
 
-The plan produced by the pipeline is specific enough that a weaker model can execute it reliably — because it has no ambiguity to resolve. This makes SDD practical for:
-
-- Cost reduction (GPT-4o for spec, GPT-4o-mini for code)
-- Privacy (local Ollama model handles implementation, nothing leaves your machine)
-- Offline workflows
+This unlocks:
+- Cost — strong model for spec, cheap for code
+- Privacy — local model for implementation, nothing leaves the machine
+- Offline — same
 
 ---
 
 ## Stack compatibility
 
-The pipeline is stack-agnostic. The `02-architect-constraints.md` step is where you inject project-specific context: your tech stack, key entities, existing patterns to follow.
+Pipeline is stack-agnostic. Inject project-specific context at `method/02-architect-constraints.md` — tech stack, key entities, conventions to respect.
 
-Works with any agent that can read files and follow instructions: Claude Code, Cursor, Aider, Continue, or a raw API call.
+Works with any agent that reads files and follows instructions: Claude Code, Cursor, Aider, Continue, raw API.
+
+---
+
+## Related work
+
+This repo is a personal pipeline, not a framework. If you want a packaged tool: GitHub **Spec Kit**, Fission AI **OpenSpec**, **BMAD-METHOD**, **GSD**, AWS **Kiro**. They solve overlapping problems with more tooling. The methodology here predates and post-dates whatever tool is current.
 
 ---
 
 ## Contributing
 
-PRs welcome. If you adapt the prompts for a specific stack or domain, share them.
+Improvements to `method/` and `templates/` welcome. Sanitized examples for `examples/` welcome. The private archive is private.
