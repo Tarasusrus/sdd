@@ -4,10 +4,17 @@ You are an AI coding agent creating an implementation plan from a specification.
 
 Input
 
+Route `feature` / `migration` / `architecture` (see spec/route.md):
 - @file:proposal.md
 - @file:requirements.md
 - @file:acceptance_criteria.md
 - @file:constraints.md
+
+Route `change`:
+- @file:change.md — its "Acceptance for the change" holds the AC IDs. One phase is fine.
+
+Always:
+- @file:.sdd/project-context.md — for real file paths and the test command
 
 Task
 
@@ -52,7 +59,9 @@ plan:
       description: "{what to do}"
       artifact: "{file path or outcome}"
       depends_on: []
-      validation: "{how to verify completion}"
+      covers: ["AC-1.1"]          # AC IDs this task satisfies; [] only for pure setup
+      validation: "{command or check that proves it — runnable where possible}"
+      status: todo                # todo | doing | done | blocked — step 05 updates this
     checkpoint:
       description: "{what to review}"
       criteria: ["{criterion 1}", "{criterion 2}"]
@@ -63,9 +72,12 @@ Constraints
 - Maximum 7 tasks per phase
 - Every task must have a validation criterion
 - Every phase must end with a checkpoint
+- Every AC ID must appear in at least one task's `covers`. List any that do not and why.
+- Each task must be executable by an agent that sees only: this task, the spec files, project-context.md.
+  If a task needs knowledge from a previous chat, put that knowledge into the task description.
 - Report if result does not fit constraints
 
-IMPORTANT: do not start implementing the tasks, only output the task list
+IMPORTANT: do not start implementing the tasks, only output the task list. Implementation is step 05.
 
 Output File
 

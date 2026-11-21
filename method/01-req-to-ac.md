@@ -16,6 +16,8 @@ Format Rules
 - WHEN: describes the precondition or trigger
 - THEN: describes the action or input
 - SHALL: describes the expected observable outcome
+- Give each criterion a stable ID: `AC-<group>.<n>` (e.g. `AC-2.3`). Never renumber after the file is written —
+  plan tasks and the convergence report point at these IDs.
 - Each criterion must be independently testable
 - Focus on BEHAVIOR, not implementation
 - Include happy path, edge cases, and error scenarios

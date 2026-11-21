@@ -19,41 +19,63 @@ Not on every task. SDD is overhead, and overhead on a typo fix is how teams come
 
 Rule of thumb: **if you'd be annoyed at the AI for misunderstanding, write a spec. Otherwise don't.**
 
-Concrete threshold:
-- More than one module touched
-- More than 30 minutes of implementation
-- Decision a future reader will ask "why" about
+You don't have to decide by hand: start every task with `method/sdd.md` and it picks the route.
 
-Below that — prompt the agent and move on.
+---
+
+## Entry point: `method/sdd.md`
+
+```
+/sdd <task in your own words>
+```
+
+1. **Project context.** First run in a project creates `.sdd/project-context.md` from the code (stack, layout, conventions, test commands, do-not-touch). Every later step reads it, so prompts stay project-agnostic.
+2. **Triage.** Reads the code the task points at, scores it against a few signals (3+ files, schema / public API, >30 min, a "why" decision, vague requirements, state migration) and picks a route:
+
+| Route | When | Path |
+|-------|------|------|
+| `direct` | no signals | implement → tests → done |
+| `change` | 1–2 signals, modifies existing behaviour | clarify (≤5 questions) → `change-delta` → plan → implement → converge → archive |
+| `feature` | 3+ signals or new capability | full pipeline below |
+| `migration` / `architecture` | state move / module boundary | full pipeline with the matching template |
+
+3. **Gates.** You confirm the route, and you say "go" after the plan. Checkpoints in the plan stop for review.
+4. **Upgrades, not downgrades.** If a task turns out bigger mid-flight, the route is upgraded and the missing steps run. It is never cut back.
+5. **Resume.** `spec/route.md` and statuses in `spec/plan.yaml` let a new session continue where the last one stopped.
 
 ---
 
 ## The pipeline (`method/`)
 
 ```
-interview → proposal → requirements → acceptance → constraints → verification → plan → archive
+sdd → interview → requirements → acceptance → constraints → verification → plan → implement → converge → archive
 ```
 
 | Step | Input | Output |
 |------|-------|--------|
+| `method/sdd.md` | the task | `spec/route.md`, `.sdd/project-context.md` (once) |
 | `method/interview.md` | your answers | `proposal.md` |
 | `method/00-prop-to-req.md` | `proposal.md` | `requirements.md` |
-| `method/01-req-to-ac.md` | `requirements.md` | `acceptance_criteria.md` |
+| `method/01-req-to-ac.md` | `requirements.md` | `acceptance_criteria.md` (with `AC-x.y` IDs) |
 | `method/02-architect-constraints.md` | `requirements.md` + `acceptance_criteria.md` | `constraints.md` |
 | `method/03-verification.md` | all of the above | `verification.md` |
-| `method/04-task-list.md` | all of the above | `plan.yaml` |
-| `method/05-archive.md` | shipped feature | `archive/<project>/<date>-<slug>/` + `retro.md` + INDEX row |
+| `method/04-task-list.md` | all of the above (or `change.md`) | `plan.yaml` — tasks with `covers` and `status` |
+| `method/05-implement.md` | `plan.yaml` | code, one commit per task, statuses updated |
+| `method/06-converge.md` | spec + diff | `converge.md` — every AC mapped to evidence; gaps become tasks |
+| `method/07-archive.md` | shipped feature | `archive/<project>/<date>-<slug>/` + `retro.md` + INDEX row |
 
-Run each step as a slash command in your agent. Each step reads what the previous step produced.
+Run each step as a slash command in your agent. Each step reads what the previous step produced. All artifacts for the active task live in `spec/`.
 
 If `03-verification.md` reports blockers — fix the upstream doc, re-run.
+If `06-converge.md` reports gaps — they are appended to the plan as tasks, run `05` again.
 
 ---
 
 ## Templates (`templates/`)
 
-Four shapes cover the common cases:
+Four spec shapes cover the common cases, plus the project context:
 
+- **`project-context.md`** — per-project facts every step reads; lives at `.sdd/project-context.md` in the target project
 - **`feature-spec.md`** — new capability, the long-lived doc
 - **`change-delta.md`** — modification of an existing feature, references parent spec
 - **`migration.md`** — moving between two states (storage, contract, infra)
@@ -75,7 +97,7 @@ Each archived feature must include `retro.md`: what worked, what didn't, what to
 
 ## Model strategy
 
-Use the strongest available model for `method/` (intent, plan). Use a cheaper or local model for implementation — the plan removes ambiguity, so a weaker executor is fine.
+Use the strongest available model for `method/` (intent, plan, review in 05 and 06). Use a cheaper or local model for implementation — the plan removes ambiguity, so a weaker executor is fine. `05-implement.md` makes this concrete: each task goes to a fresh executor with only its slice of the spec, and the strong model reviews the result.
 
 This unlocks:
 - Cost — strong model for spec, cheap for code
@@ -86,7 +108,7 @@ This unlocks:
 
 ## Stack compatibility
 
-Pipeline is stack-agnostic. Inject project-specific context at `method/02-architect-constraints.md` — tech stack, key entities, conventions to respect.
+Pipeline is stack-agnostic. Project-specific context — tech stack, key entities, conventions to respect — goes into `.sdd/project-context.md`, never into the prompts.
 
 Works with any agent that reads files and follows instructions: Claude Code, Cursor, Aider, Continue, raw API.
 
