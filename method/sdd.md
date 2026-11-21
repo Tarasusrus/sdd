@@ -40,7 +40,8 @@ Pick the route:
 | `migration` | moves between two states | as `feature`, with `templates/migration.md` as the design doc; rollback plan is mandatory |
 | `architecture` | sets or changes a module boundary / contract | as `feature`, with `templates/architecture.md` as the design doc |
 
-Write `spec/route.md`:
+For `direct`, do not write anything to `spec/` — there is nothing to resume or archive.
+For every other route, write `spec/route.md`:
 
 ```
 task: {one line, user's words}
@@ -48,6 +49,7 @@ route: {direct|change|feature|migration|architecture}
 signals: [{the ones that fired}]
 why: {one or two sentences}
 started: {YYYY-MM-DD}
+base: {filled at Gate 2}
 ```
 
 Gate 1 — ask the user to confirm the route (AskUserQuestion, recommended option first).
@@ -75,6 +77,7 @@ If `03-verification.md` reports a BLOCKER, fix the upstream document and re-run 
 
 Gate 2 — after `spec/plan.yaml` exists, show the user: number of phases and tasks, checkpoints,
 open assumptions. Ask for "go" before implementing. This gate is never skipped for `change` and above.
+On "go", record the current commit SHA as `base:` in spec/route.md — step 06 diffs from it.
 
 Step 4 — Implement, converge, archive
 
@@ -91,8 +94,11 @@ Never downgrade a route mid-flight: cutting process after finding complexity is 
 
 Resuming
 
-If `spec/route.md` already exists, do not start over. Read it, find the last artifact produced,
-and continue from the next step. For step 05, statuses in `spec/plan.yaml` say where to resume.
+If `spec/route.md` already exists:
+- Same task as $ARGUMENTS (or $ARGUMENTS is empty) — do not start over. Find the last artifact produced
+  and continue from the next step. For step 05, statuses in `spec/plan.yaml` say where to resume.
+- Different task — ask the user one question: resume the unfinished one, archive it as abandoned
+  (07 with outcome "abandoned"), or park it under `spec/parked/<slug>/`. Never overwrite it silently.
 
 Output
 

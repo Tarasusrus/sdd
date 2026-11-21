@@ -19,7 +19,7 @@ Steps
 2. Move every artifact from spec/ into that folder. Keep filenames unchanged. Do not move .sdd/project-context.md — it outlives the feature.
 3. Generate retro.md inside the archive folder using the template below.
 4. Update INDEX.md at repo root: append one row with project, date, slug, one-line outcome, tags.
-5. If the project has a master spec for this capability, merge any decisions from constraints.md into it. Otherwise skip.
+5. If the project has a master spec for this capability, merge the decisions into it: from constraints.md, or for route `change` from the "After ship" section of change.md into its `parent_spec`. Otherwise skip.
 
 retro.md template
 

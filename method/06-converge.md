@@ -8,7 +8,7 @@ Input
 - @file:spec/route.md
 - The spec for the route: acceptance_criteria.md + constraints.md, or change.md
 - @file:spec/plan.yaml
-- The diff of the work: `git diff <base>...HEAD`, where base is the commit before the first task commit
+- The diff of the work: `git diff <base>...HEAD`, with `base` from spec/route.md
 - @file:.sdd/project-context.md — test / lint / build commands
 
 Task
