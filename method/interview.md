@@ -31,12 +31,14 @@ Sections to cover
 3. Solution — what we want to build (high level)
 4. Scope — what is IN scope for MVP, what is explicitly OUT of scope
 5. User flow — step-by-step happy path from trigger to outcome
-6. Tech context — stack, key entities/tables involved, existing mechanisms to reuse
+6. Tech context — key entities/tables involved, existing mechanisms to reuse.
+   Read @file:.sdd/project-context.md and the relevant code first; ask only what is specific to this feature
+   and cannot be found there. Never ask the user what the stack is if project-context.md already says it.
 7. Open questions — anything still unresolved that affects implementation
 
 Output
 
-After the interview is complete, write proposal.md in the same directory as this file.
+After the interview is complete, write spec/proposal.md.
 
 Structure of proposal.md:
 

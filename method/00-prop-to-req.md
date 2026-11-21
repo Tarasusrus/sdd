@@ -19,13 +19,9 @@ See @file:proposal.md
 
 Project Context
 
-Go service (crm-backend). Key entities:
-- course_group: groups within a course (id, title, group_number, course_id, start_at, limit_suser_num, manage_mode, is_deleted)
-- course_group_suser: student-group membership (group_id, suser_id, average_score)
-- application_origin: student applications to courses (suser_id, course_id, status, ...)
-- course_suser: student-course enrollment (course_id, suser_id)
-
-Current enrollment flow (async courses): application accepted → AddStudentToLastGroupByApplicationId → student gets last created group.
+See @file:.sdd/project-context.md (stack, key entities, existing flows).
+If it is missing, stop and run `method/sdd.md` first — it creates it.
+Do not invent entities or flows that are not in project-context.md or in the code; ask instead.
 
 Output File
 
