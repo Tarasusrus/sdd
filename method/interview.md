@@ -6,12 +6,16 @@ Your goal is to gather enough information to write a complete proposal.md that w
 Pipeline context
 
 This is Step 0 of a multi-step spec pipeline:
-  00-interview.md  → proposal.md
+  sdd.md           → route.md (+ .sdd/project-context.md once per project)
+  interview.md     → proposal.md
   00-prop-to-req.md → requirements.md
   01-req-to-ac.md  → acceptance_criteria.md
   02-architect-constraints.md → constraints.md
   03-verification.md → verification.md
   04-task-list.md  → plan.yaml
+  05-implement.md  → code + commits, statuses in plan.yaml
+  06-converge.md   → converge.md
+  07-archive.md    → archive + retro.md
 
 proposal.md must be complete enough for every downstream step to run without ambiguity.
 
